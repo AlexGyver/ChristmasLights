@@ -212,10 +212,12 @@ void setup() {
 
 #if IR_ON == 1
 
-  ledMode = EEPROM.read(STARTMODE);
-  // Location 0 is the starting mode.
+ledMode = EEPROM.read(STARTMODE);
+// Location 0 is the starting mode.
+NUM_LEDS = EEPROM.read(STRANDLEN); 
 #if MAX_LEDS < 255
-  NUM_LEDS = EEPROM.read(STRANDLEN);                                            // Need to ensure NUM_LEDS < MAX_LEDS elsewhere.
+if (EEPROM.read(STRANDLEN+1))
+NUM_LEDS = MAX_LEDS; // Need to ensure NUM_LEDS < MAX_LEDS elsewhere.
 #else
   NUM_LEDS = (uint16_t)EEPROM.read(STRANDLEN + 1) << 8 +                               // Need to ensure NUM_LEDS < MAX_LEDS elsewhere.
              EEPROM.read(STRANDLEN);
