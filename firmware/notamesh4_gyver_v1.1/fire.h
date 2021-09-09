@@ -1,4 +1,4 @@
-﻿#ifndef FIRE_H
+#ifndef FIRE_H
 #define FIRE_H
 
 void fire() {                                         // The fill_rainbow call doesn't support brightness levels
