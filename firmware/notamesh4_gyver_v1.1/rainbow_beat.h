@@ -1,4 +1,4 @@
-﻿#ifndef RAINBOW_BEAT_H
+#ifndef RAINBOW_BEAT_H
 #define RAINBOW_BEAT_H
 
 // Usage - rainbow_beat();
