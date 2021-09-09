@@ -1,4 +1,4 @@
-﻿#ifndef CANDLES_H
+#ifndef CANDLES_H
 #define CANDLES_H
 
 void candles() {
