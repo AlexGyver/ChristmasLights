@@ -1,4 +1,4 @@
-﻿#ifndef COLORWAVE_H
+#ifndef COLORWAVE_H
 #define COLORWAVE_H
 
 // ColorWavesWithPalettes
