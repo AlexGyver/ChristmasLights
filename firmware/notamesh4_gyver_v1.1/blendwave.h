@@ -1,4 +1,4 @@
-﻿#ifndef BLENDWARE_H
+#ifndef BLENDWARE_H
 #define BLENDWARE_H
 
 void blendwave() {
