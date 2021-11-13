@@ -26,10 +26,10 @@
 #define KEY_DELTA     5           // погрешность значения кнопки, тоесть от -KEY_DELTA до +KEY_DELTA
 
 typedef struct {
-  int input;          //Последнее нажатие кнопки 
-  int input_new;      //только что пришедьшее нажатие кнопки
-  bool key_bounce;    //для антидребезга
-  uint32_t key_time;  //время последнего нажатия
+  int input;          // Последнее нажатие кнопки 
+  int input_new;      // только что пришедшее нажатие кнопки
+  bool bounce;        // для антидребезга
+  uint32_t key_time;  // время последнего нажатия
 } Analog_Keys_t;
 
 void analog_keys_setup() {
@@ -37,73 +37,74 @@ void analog_keys_setup() {
 }
 
 void analog_keys_tick(Analog_Keys_t *analog_keys, uint8_t *protocol, uint32_t *command) {
-  analog_keys->input_new = analogRead(PIN_KEY);                                      //прочитаем аналоговые кнопки
+  analog_keys->input_new = analogRead(PIN_KEY);                                           //прочитаем аналоговые кнопки
   if ((((analog_keys->input - KEY_DELTA) > analog_keys->input_new) ||                     //Пришло новое значение отличное от прошлого
           ((analog_keys->input + KEY_DELTA) < analog_keys->input_new)) &&
-        !analog_keys->key_bounce) {                                                     // и еще ничего не приходило
-    analog_keys->key_bounce = 1;                                                         //Начинаем обрабатывать
-    analog_keys->key_time = millis();                                                    //Запомним время
+        !analog_keys->bounce) {                                                       // и еще ничего не приходило
+    analog_keys->bounce = 1;                                                          //Начинаем обрабатывать
+    analog_keys->key_time = millis();                                                     //Запомним время
   }
-  else if (analog_keys->key_bounce &&                                                    //Обрабатываем нажатия
-             ((millis() - analog_keys->key_time) >= 50)) {                               //Закончилось время дребезга
-    analog_keys->key_bounce = 0;                                                       //Больше не обрабатываем
+  else if (analog_keys->bounce &&                                                     //Обрабатываем нажатия
+             ((millis() - analog_keys->key_time) >= 50)) {                                //Закончилось время дребезга
+    analog_keys->bounce = 0;                                                          //Больше не обрабатываем
     analog_keys->input = analog_keys->input_new;
 #if LOG_ON == 1
-    Serial.print(F("Analog Key: ")); Serial.println(analog_keys->input);
+    Serial.print(F("Analog Key: "));
+    Serial.println(analog_keys->input);
 #endif
 
 #if KEY_0 >= KEY_DELTA
-    if  ( ( (KEY_0 - KEY_DELTA) < analog_keys->input) &&
-          ( (KEY_0 + KEY_DELTA) > analog_keys->input) )  {                       //Нашли нажатую кнопку KEY_0
+    if  (((KEY_0 - KEY_DELTA) < analog_keys->input) &&
+          ((KEY_0 + KEY_DELTA) > analog_keys->input))  {                       //Нашли нажатую кнопку KEY_0
       *protocol = 1;
       *command = KEY_0;
     }
 #endif
 #if KEY_1 >= KEY_DELTA
-    if  ( ( (KEY_1 - KEY_DELTA) < analog_keys->input) &&
-          ( (KEY_1 + KEY_DELTA) > analog_keys->input) )  {                       //Нашли нажатую кнопку KEY_1
+    if  (((KEY_1 - KEY_DELTA) < analog_keys->input) &&
+          ((KEY_1 + KEY_DELTA) > analog_keys->input))  {                       //Нашли нажатую кнопку KEY_1
       *protocol = 1;
       *command = KEY_1;
     }
 #endif
 #if KEY_2 >= KEY_DELTA
-    if  ( ( (KEY_2 - KEY_DELTA) < analog_keys->input) &&
-          ( (KEY_2 + KEY_DELTA) > analog_keys->input) )  {                       //Нашли нажатую кнопку KEY_2
+    if (((KEY_2 - KEY_DELTA) < analog_keys->input) &&
+          ((KEY_2 + KEY_DELTA) > analog_keys->input)) {                       //Нашли нажатую кнопку KEY_2
       *protocol = 1;
       *command = KEY_2;
     }
 #endif
 #if KEY_3 >= KEY_DELTA
-    if  ( ( (KEY_3 - KEY_DELTA) < analog_keys->input) &&
-          ( (KEY_3 + KEY_DELTA) > analog_keys->input) )  {                       //Нашли нажатую кнопку KEY_3
+    if (((KEY_3 - KEY_DELTA) < analog_keys->input) &&
+          ((KEY_3 + KEY_DELTA) > analog_keys->input)) {                       //Нашли нажатую кнопку KEY_3
       *protocol = 1;
       *command = KEY_3;
     }
 #endif
 #if KEY_4 >= KEY_DELTA
-    if  ( ( (KEY_4 - KEY_DELTA) < analog_keys->input) &&
-          ( (KEY_4 + KEY_DELTA) > analog_keys->input) )  {                       //Нашли нажатую кнопку KEY_4
+    if (((KEY_4 - KEY_DELTA) < analog_keys->input) &&
+          ((KEY_4 + KEY_DELTA) > analog_keys->input)) {                       //Нашли нажатую кнопку KEY_4
       *protocol = 1;
       *command = KEY_4;
     }
 #endif
 #if KEY_5 >= KEY_DELTA
-    if  ( ( (KEY_5 - KEY_DELTA) < analog_keys->input) &&
-          ( (KEY_5 + KEY_DELTA) > analog_keys->input) )  {                       //Нашли нажатую кнопку KEY_5
+    if (((KEY_5 - KEY_DELTA) < analog_keys->input) &&
+          ((KEY_5 + KEY_DELTA) > analog_keys->input)) {                       //Нашли нажатую кнопку KEY_5
       *protocol = 1;
       *command = KEY_5;
     }
 #endif
 #if KEY_6 >= KEY_DELTA
-    if  ( ( (KEY_6 - KEY_DELTA) < analog_keys->input) &&
-          ( (KEY_6 + KEY_DELTA) > analog_keys->input) )  {                       //Нашли нажатую кнопку KEY_6
+    if (((KEY_6 - KEY_DELTA) < analog_keys->input) &&
+          ((KEY_6 + KEY_DELTA) > analog_keys->input)) {                       //Нашли нажатую кнопку KEY_6
       *protocol = 1;
       *command = KEY_6;
     }
 #endif
 #if KEY_7 >= KEY_DELTA
-    if  ( ( (KEY_7 - KEY_DELTA) < analog_keys->input) &&
-          ( (KEY_7 + KEY_DELTA) > analog_keys->input) )  {                       //Нашли нажатую кнопку KEY_7
+    if (((KEY_7 - KEY_DELTA) < analog_keys->input) &&
+          ((KEY_7 + KEY_DELTA) > analog_keys->input)) {                       //Нашли нажатую кнопку KEY_7
       *protocol = 1;
       *command = KEY_7;
     }
