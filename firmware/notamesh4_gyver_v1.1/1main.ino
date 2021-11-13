@@ -19,10 +19,8 @@
 #endif
 
 #if KEY_ON == 1                                                 //Для аналоговых кнопок
-int key_input = 0;                                            //Последнее нажатие кнопки
-int key_input_new;                                            //только что пришедьшее нажатие кнопки
-bool key_bounce = 0;                                          //для антидребезга
-uint32_t key_time;                                            //время последнего нажатия
+#include "analog_keys.h"
+Analog_Keys_t analog_keys;
 #endif
 
 #if IR_ON == 1
@@ -178,7 +176,7 @@ GButton btn(BTN_PIN);
 void setup() {
 
 #if KEY_ON == 1
-  pinMode(PIN_KEY, INPUT);                                                        //Для аналоговых кнопок
+  analog_keys_setup();                                                        //Для аналоговых кнопок
 #endif
 
 #if LOG_ON == 1
@@ -403,78 +401,7 @@ void loop() {
   }
 
 #if KEY_ON == 1                                                             //Для аналоговых кнопок
-  key_input_new = analogRead(PIN_KEY);                                      //прочитаем аналоговые кнопки
-  if  ( ( ( (key_input - KEY_DELTA) > key_input_new) ||                     //Пришло новое значение отличное от прошлого
-          ( (key_input + KEY_DELTA) < key_input_new) ) &&
-        !key_bounce ) {                                                     // и еще ничего не приходило
-    key_bounce = 1;                                                         //Начинаем обрабатывать
-    key_time = millis();                                                    //Запомним время
-  }
-  else if (  key_bounce &&                                                    //Обрабатываем нажатия
-             ((millis() - key_time) >= 50 )  ) {                               //Закончилось время дребезга
-    key_bounce = 0;                                                       //Больше не обрабатываем
-    key_input = key_input_new;
-#if LOG_ON == 1
-    Serial.print(F("Analog Key: ")); Serial.println(key_input);
-#endif
-
-#if KEY_0 >= KEY_DELTA
-    if  ( ( (KEY_0 - KEY_DELTA) < key_input) &&
-          ( (KEY_0 + KEY_DELTA) > key_input) )  {                       //Нашли нажатую кнопку KEY_0
-      Protocol = 1;
-      Command = KEY_0;
-    }
-#endif
-#if KEY_1 >= KEY_DELTA
-    if  ( ( (KEY_1 - KEY_DELTA) < key_input) &&
-          ( (KEY_1 + KEY_DELTA) > key_input) )  {                       //Нашли нажатую кнопку KEY_1
-      Protocol = 1;
-      Command = KEY_1;
-    }
-#endif
-#if KEY_2 >= KEY_DELTA
-    if  ( ( (KEY_2 - KEY_DELTA) < key_input) &&
-          ( (KEY_2 + KEY_DELTA) > key_input) )  {                       //Нашли нажатую кнопку KEY_2
-      Protocol = 1;
-      Command = KEY_2;
-    }
-#endif
-#if KEY_3 >= KEY_DELTA
-    if  ( ( (KEY_3 - KEY_DELTA) < key_input) &&
-          ( (KEY_3 + KEY_DELTA) > key_input) )  {                       //Нашли нажатую кнопку KEY_3
-      Protocol = 1;
-      Command = KEY_3;
-    }
-#endif
-#if KEY_4 >= KEY_DELTA
-    if  ( ( (KEY_4 - KEY_DELTA) < key_input) &&
-          ( (KEY_4 + KEY_DELTA) > key_input) )  {                       //Нашли нажатую кнопку KEY_4
-      Protocol = 1;
-      Command = KEY_4;
-    }
-#endif
-#if KEY_5 >= KEY_DELTA
-    if  ( ( (KEY_5 - KEY_DELTA) < key_input) &&
-          ( (KEY_5 + KEY_DELTA) > key_input) )  {                       //Нашли нажатую кнопку KEY_5
-      Protocol = 1;
-      Command = KEY_5;
-    }
-#endif
-#if KEY_6 >= KEY_DELTA
-    if  ( ( (KEY_6 - KEY_DELTA) < key_input) &&
-          ( (KEY_6 + KEY_DELTA) > key_input) )  {                       //Нашли нажатую кнопку KEY_6
-      Protocol = 1;
-      Command = KEY_6;
-    }
-#endif
-#if KEY_7 >= KEY_DELTA
-    if  ( ( (KEY_7 - KEY_DELTA) < key_input) &&
-          ( (KEY_7 + KEY_DELTA) > key_input) )  {                       //Нашли нажатую кнопку KEY_7
-      Protocol = 1;
-      Command = KEY_7;
-    }
-#endif
-  }
+  analog_keys_tick(&analog_keys, &Protocol, &Command);
 #endif
 
 #if ( IR_ON == 1 || KEY_ON == 1 || USE_BTN == 1 )
