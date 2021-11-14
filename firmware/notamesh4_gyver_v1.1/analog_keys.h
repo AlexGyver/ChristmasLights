@@ -40,13 +40,13 @@ void analog_keys_tick(Analog_Keys_t *analog_keys, uint8_t *protocol, uint32_t *c
   analog_keys->input_new = analogRead(PIN_KEY);                                           //прочитаем аналоговые кнопки
   if ((((analog_keys->input - KEY_DELTA) > analog_keys->input_new) ||                     //Пришло новое значение отличное от прошлого
           ((analog_keys->input + KEY_DELTA) < analog_keys->input_new)) &&
-        !analog_keys->bounce) {                                                       // и еще ничего не приходило
-    analog_keys->bounce = 1;                                                          //Начинаем обрабатывать
+        !analog_keys->bounce) {                                                           // и еще ничего не приходило
+    analog_keys->bounce = 1;                                                              //Начинаем обрабатывать
     analog_keys->key_time = millis();                                                     //Запомним время
   }
-  else if (analog_keys->bounce &&                                                     //Обрабатываем нажатия
+  else if (analog_keys->bounce &&                                                         //Обрабатываем нажатия
              ((millis() - analog_keys->key_time) >= 50)) {                                //Закончилось время дребезга
-    analog_keys->bounce = 0;                                                          //Больше не обрабатываем
+    analog_keys->bounce = 0;                                                              //Больше не обрабатываем
     analog_keys->input = analog_keys->input_new;
 #if LOG_ON == 1
     Serial.print(F("Analog Key: "));

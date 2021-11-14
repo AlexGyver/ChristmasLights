@@ -347,13 +347,13 @@ void loop() {
           Serial.print(F("New Palette: "));  Serial.println(gCurrentPaletteNumber);
 #endif
         }
-        gTargetPalette = gGradientPalettes[gCurrentPaletteNumber];                // We're just ensuring that the gTargetPalette WILL be assigned.
+        gTargetPalette = gGradientPalettes[gCurrentPaletteNumber];              // We're just ensuring that the gTargetPalette WILL be assigned.
       }
     }
 #endif
 
 #if DIRECT_TIME > 0
-    EVERY_N_SECONDS(DIRECT_TIME) {                                            // Меняем направление
+    EVERY_N_SECONDS(DIRECT_TIME) {                                              // Меняем направление
       thisdir = thisdir * -1;
     }
 #endif
@@ -369,14 +369,14 @@ void loop() {
 #if CHANGE_SPARK == 4
         sparkler(rand_spark);
 #else
-        sparkler(CHANGE_SPARK);                                                             // бенгальский огонь
+        sparkler(CHANGE_SPARK);                                                 // бенгальский огонь
 #endif
       }
 #endif
     }
 
 #if CHANGE_ON == 1
-    EVERY_N_MILLISECONDS(CHANGE_TIME * 1000 / NUM_LEDS) {                      // Движение плавной смены эффектов
+    EVERY_N_MILLISECONDS(CHANGE_TIME * 1000 / NUM_LEDS) {                       // Движение плавной смены эффектов
       if ( StepMode < NUM_LEDS)
       { StepMode++;
         if (StepMode == 10) strobe_mode(newMode, 1);
@@ -392,21 +392,21 @@ void loop() {
     }
 #endif
 
-    if (glitter) addglitter(10);                                                // If the glitter flag is set, let's add some.
+    if (glitter) addglitter(10);                                                 // If the glitter flag is set, let's add some.
 #if CANDLE_KOL >0
     if (candle)  addcandle();
 #endif
 
-    if (background) addbackground();                                            // Включить заполнение черного цвета фоном
+    if (background) addbackground();                                             // Включить заполнение черного цвета фоном
   }
 
-#if KEY_ON == 1                                                             //Для аналоговых кнопок
+#if KEY_ON == 1                                                                  // Для аналоговых кнопок
   analog_keys_tick(&analog_keys, &Protocol, &Command);
 #endif
 
-#if ( IR_ON == 1 || KEY_ON == 1 || USE_BTN == 1 )
-  if ( (IR_Time_Mode > 0) &&                                                //Идет отчет времени
-       ((millis() - IR_Time_Mode) >= 2000 )  ) {                            //И прошло больше 2 секунд
+#if (IR_ON == 1 || KEY_ON == 1 || USE_BTN == 1)
+  if ((IR_Time_Mode > 0) &&                                                      // Идет отчет времени
+       ((millis() - IR_Time_Mode) >= 2000)) {                                    // И прошло больше 2 секунд
     IR_Time_Mode = 0;
     if (IR_New_Mode <= maxMode) SetMode(IR_New_Mode);
     IR_New_Mode = 0;
@@ -414,7 +414,7 @@ void loop() {
 #endif
 
 #if IR_ON == 1
-  while (!irrecv.isIdle());                                                   // if not idle, wait till complete
+  while (!irrecv.isIdle());                                                      // if not idle, wait till complete
 
   if (irrecv.decode(&results)) {
     /* respond to button */
@@ -447,16 +447,17 @@ void strobe_mode(uint8_t mode, bool mc) {                  // mc stands for 'Mod
 
   if (mc) {
     fill_solid(leds, NUM_LEDS, CRGB(0, 0, 0));                // Clean up the array for the first time through. Don't show display though, so you may have a smooth transition.
-#if LOG_ON == 1
+#   if LOG_ON == 1
     Serial.print(F("Mode: "));
     Serial.println(mode);
     Serial.println(millis());
-#endif
-#if PALETTE_TIME>0
+#   endif
+
+#   if PALETTE_TIME>0
     if (palchg == 0) palchg = 3;
-#else
+#   else
     if (palchg == 0) palchg = 1;
-#endif
+#   endif
   }
 
 
@@ -803,8 +804,8 @@ void strobe_mode(uint8_t mode, bool mc) {                  // mc stands for 'Mod
     case 100: if (mc) {
         palchg = 0;
       } fill_solid(leds, NUM_LEDS,  solid); break;    //Установить цвет
-    case 200: fill_solid(leds, MAX_LEDS, CRGB::Black); fill_solid(leds, NUM_LEDS, CRGB(255, 255, 255)); break; //Зажеч гирлянду длинной NUM_LEDS (регулировка длинны гирлянды)
-    case 201: fill_solid(leds, MAX_LEDS, CRGB::Black); fill_solid(leds, meshdelay, CRGB(255, 255, 255)); break; //Зажеч гирлянду длинной meshdelay
+    case 200: fill_solid(leds, MAX_LEDS, CRGB::Black); fill_solid(leds, NUM_LEDS, CRGB(255, 255, 255)); break; //Зажечь гирлянду длинной NUM_LEDS (регулировка длинны гирлянды)
+    case 201: fill_solid(leds, MAX_LEDS, CRGB::Black); fill_solid(leds, meshdelay, CRGB(255, 255, 255)); break; //Зажечь гирлянду длинной meshdelay
     default : ledMode = 0;  break;        //нет такого режима принудительно ставим нулевой
 
   } // switch mode
