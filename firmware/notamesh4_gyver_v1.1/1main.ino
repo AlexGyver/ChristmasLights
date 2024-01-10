@@ -19,10 +19,8 @@
 #endif
 
 #if KEY_ON == 1                                                 //Для аналоговых кнопок
-int key_input = 0;                                            //Последнее нажатие кнопки
-int key_input_new;                                            //только что пришедьшее нажатие кнопки
-bool key_bounce = 0;                                          //для антидребезга
-uint32_t key_time;                                            //время последнего нажатия
+#include "analog_keys.h"
+Analog_Keys_t analog_keys;
 #endif
 
 #if IR_ON == 1
@@ -178,7 +176,7 @@ GButton btn(BTN_PIN);
 void setup() {
 
 #if KEY_ON == 1
-  pinMode(PIN_KEY, INPUT);                                                        //Для аналоговых кнопок
+  analog_keys_setup();                                                        //Для аналоговых кнопок
 #endif
 
 #if LOG_ON == 1
@@ -349,13 +347,13 @@ void loop() {
           Serial.print(F("New Palette: "));  Serial.println(gCurrentPaletteNumber);
 #endif
         }
-        gTargetPalette = gGradientPalettes[gCurrentPaletteNumber];                // We're just ensuring that the gTargetPalette WILL be assigned.
+        gTargetPalette = gGradientPalettes[gCurrentPaletteNumber];              // We're just ensuring that the gTargetPalette WILL be assigned.
       }
     }
 #endif
 
 #if DIRECT_TIME > 0
-    EVERY_N_SECONDS(DIRECT_TIME) {                                            // Меняем направление
+    EVERY_N_SECONDS(DIRECT_TIME) {                                              // Меняем направление
       thisdir = thisdir * -1;
     }
 #endif
@@ -371,14 +369,14 @@ void loop() {
 #if CHANGE_SPARK == 4
         sparkler(rand_spark);
 #else
-        sparkler(CHANGE_SPARK);                                                             // бенгальский огонь
+        sparkler(CHANGE_SPARK);                                                 // бенгальский огонь
 #endif
       }
 #endif
     }
 
 #if CHANGE_ON == 1
-    EVERY_N_MILLISECONDS(CHANGE_TIME * 1000 / NUM_LEDS) {                      // Движение плавной смены эффектов
+    EVERY_N_MILLISECONDS(CHANGE_TIME * 1000 / NUM_LEDS) {                       // Движение плавной смены эффектов
       if ( StepMode < NUM_LEDS)
       { StepMode++;
         if (StepMode == 10) strobe_mode(newMode, 1);
@@ -394,92 +392,21 @@ void loop() {
     }
 #endif
 
-    if (glitter) addglitter(10);                                                // If the glitter flag is set, let's add some.
+    if (glitter) addglitter(10);                                                 // If the glitter flag is set, let's add some.
 #if CANDLE_KOL >0
     if (candle)  addcandle();
 #endif
 
-    if (background) addbackground();                                            // Включить заполнение черного цвета фоном
+    if (background) addbackground();                                             // Включить заполнение черного цвета фоном
   }
 
-#if KEY_ON == 1                                                             //Для аналоговых кнопок
-  key_input_new = analogRead(PIN_KEY);                                      //прочитаем аналоговые кнопки
-  if  ( ( ( (key_input - KEY_DELTA) > key_input_new) ||                     //Пришло новое значение отличное от прошлого
-          ( (key_input + KEY_DELTA) < key_input_new) ) &&
-        !key_bounce ) {                                                     // и еще ничего не приходило
-    key_bounce = 1;                                                         //Начинаем обрабатывать
-    key_time = millis();                                                    //Запомним время
-  }
-  else if (  key_bounce &&                                                    //Обрабатываем нажатия
-             ((millis() - key_time) >= 50 )  ) {                               //Закончилось время дребезга
-    key_bounce = 0;                                                       //Больше не обрабатываем
-    key_input = key_input_new;
-#if LOG_ON == 1
-    Serial.print(F("Analog Key: ")); Serial.println(key_input);
+#if KEY_ON == 1                                                                  // Для аналоговых кнопок
+  analog_keys_tick(&analog_keys, &Protocol, &Command);
 #endif
 
-#if KEY_0 >= KEY_DELTA
-    if  ( ( (KEY_0 - KEY_DELTA) < key_input) &&
-          ( (KEY_0 + KEY_DELTA) > key_input) )  {                       //Нашли нажатую кнопку KEY_0
-      Protocol = 1;
-      Command = KEY_0;
-    }
-#endif
-#if KEY_1 >= KEY_DELTA
-    if  ( ( (KEY_1 - KEY_DELTA) < key_input) &&
-          ( (KEY_1 + KEY_DELTA) > key_input) )  {                       //Нашли нажатую кнопку KEY_1
-      Protocol = 1;
-      Command = KEY_1;
-    }
-#endif
-#if KEY_2 >= KEY_DELTA
-    if  ( ( (KEY_2 - KEY_DELTA) < key_input) &&
-          ( (KEY_2 + KEY_DELTA) > key_input) )  {                       //Нашли нажатую кнопку KEY_2
-      Protocol = 1;
-      Command = KEY_2;
-    }
-#endif
-#if KEY_3 >= KEY_DELTA
-    if  ( ( (KEY_3 - KEY_DELTA) < key_input) &&
-          ( (KEY_3 + KEY_DELTA) > key_input) )  {                       //Нашли нажатую кнопку KEY_3
-      Protocol = 1;
-      Command = KEY_3;
-    }
-#endif
-#if KEY_4 >= KEY_DELTA
-    if  ( ( (KEY_4 - KEY_DELTA) < key_input) &&
-          ( (KEY_4 + KEY_DELTA) > key_input) )  {                       //Нашли нажатую кнопку KEY_4
-      Protocol = 1;
-      Command = KEY_4;
-    }
-#endif
-#if KEY_5 >= KEY_DELTA
-    if  ( ( (KEY_5 - KEY_DELTA) < key_input) &&
-          ( (KEY_5 + KEY_DELTA) > key_input) )  {                       //Нашли нажатую кнопку KEY_5
-      Protocol = 1;
-      Command = KEY_5;
-    }
-#endif
-#if KEY_6 >= KEY_DELTA
-    if  ( ( (KEY_6 - KEY_DELTA) < key_input) &&
-          ( (KEY_6 + KEY_DELTA) > key_input) )  {                       //Нашли нажатую кнопку KEY_6
-      Protocol = 1;
-      Command = KEY_6;
-    }
-#endif
-#if KEY_7 >= KEY_DELTA
-    if  ( ( (KEY_7 - KEY_DELTA) < key_input) &&
-          ( (KEY_7 + KEY_DELTA) > key_input) )  {                       //Нашли нажатую кнопку KEY_7
-      Protocol = 1;
-      Command = KEY_7;
-    }
-#endif
-  }
-#endif
-
-#if ( IR_ON == 1 || KEY_ON == 1 || USE_BTN == 1 )
-  if ( (IR_Time_Mode > 0) &&                                                //Идет отчет времени
-       ((millis() - IR_Time_Mode) >= 2000 )  ) {                            //И прошло больше 2 секунд
+#if (IR_ON == 1 || KEY_ON == 1 || USE_BTN == 1)
+  if ((IR_Time_Mode > 0) &&                                                      // Идет отчет времени
+       ((millis() - IR_Time_Mode) >= 2000)) {                                    // И прошло больше 2 секунд
     IR_Time_Mode = 0;
     if (IR_New_Mode <= maxMode) SetMode(IR_New_Mode);
     IR_New_Mode = 0;
@@ -487,7 +414,7 @@ void loop() {
 #endif
 
 #if IR_ON == 1
-  while (!irrecv.isIdle());                                                   // if not idle, wait till complete
+  while (!irrecv.isIdle());                                                      // if not idle, wait till complete
 
   if (irrecv.decode(&results)) {
     /* respond to button */
@@ -520,16 +447,17 @@ void strobe_mode(uint8_t mode, bool mc) {                  // mc stands for 'Mod
 
   if (mc) {
     fill_solid(leds, NUM_LEDS, CRGB(0, 0, 0));                // Clean up the array for the first time through. Don't show display though, so you may have a smooth transition.
-#if LOG_ON == 1
+#   if LOG_ON == 1
     Serial.print(F("Mode: "));
     Serial.println(mode);
     Serial.println(millis());
-#endif
-#if PALETTE_TIME>0
+#   endif
+
+#   if PALETTE_TIME>0
     if (palchg == 0) palchg = 3;
-#else
+#   else
     if (palchg == 0) palchg = 1;
-#endif
+#   endif
   }
 
 
@@ -876,8 +804,8 @@ void strobe_mode(uint8_t mode, bool mc) {                  // mc stands for 'Mod
     case 100: if (mc) {
         palchg = 0;
       } fill_solid(leds, NUM_LEDS,  solid); break;    //Установить цвет
-    case 200: fill_solid(leds, MAX_LEDS, CRGB::Black); fill_solid(leds, NUM_LEDS, CRGB(255, 255, 255)); break; //Зажеч гирлянду длинной NUM_LEDS (регулировка длинны гирлянды)
-    case 201: fill_solid(leds, MAX_LEDS, CRGB::Black); fill_solid(leds, meshdelay, CRGB(255, 255, 255)); break; //Зажеч гирлянду длинной meshdelay
+    case 200: fill_solid(leds, MAX_LEDS, CRGB::Black); fill_solid(leds, NUM_LEDS, CRGB(255, 255, 255)); break; //Зажечь гирлянду длинной NUM_LEDS (регулировка длинны гирлянды)
+    case 201: fill_solid(leds, MAX_LEDS, CRGB::Black); fill_solid(leds, meshdelay, CRGB(255, 255, 255)); break; //Зажечь гирлянду длинной meshdelay
     default : ledMode = 0;  break;        //нет такого режима принудительно ставим нулевой
 
   } // switch mode
